@@ -1,14 +1,13 @@
 from unittest.mock import patch
+from hypothesis import given, settings, strategies as st
 from src.extract import get_yearly_sessions_data
 
 URL = "https://api.openf1.org/v1/sessions"
 
 
-@patch("src.extract.requests.get")
-def test_get_yearly_sessions_data(mock_get):
-    mock_response = mock_get.return_value
-    mock_response.status_code = 200
-    mock_response.json.return_value = [
+def create_mock_response_data(year=2024):
+    """Helper function to create mock response data."""
+    return [
         {
             "session_key": 9465,
             "session_name": "Practice 1",
@@ -23,7 +22,7 @@ def test_get_yearly_sessions_data(mock_get):
             "country_name": "Bahrain",
             "circuit_key": 63,
             "circuit_short_name": "Sakhir",
-            "year": 2024,
+            "year": year,
         },
         {
             "session_key": 9466,
@@ -39,12 +38,31 @@ def test_get_yearly_sessions_data(mock_get):
             "country_name": "Bahrain",
             "circuit_key": 63,
             "circuit_short_name": "Sakhir",
-            "year": 2024,
+            "year": year,
         },
     ]
+
+
+@patch("src.extract.requests.get")
+def test_get_yearly_sessions_data(mock_get):
+    mock_response = mock_get.return_value
+    mock_response.status_code = 200
+    mock_response.json.return_value = create_mock_response_data()
 
     response = get_yearly_sessions_data(url=URL, year="2024")
 
     assert response.status_code == 200
     assert isinstance(response.json(), list)
     assert "year" in response.json()[0]
+
+
+@patch("src.extract.requests.get")
+@settings(deadline=1000, max_examples=2)
+@given(year=st.sampled_from(["2023", "2024"]))
+def test_get_yearly_sessions_data_with_parameter(mock_get, year):
+    mock_response = mock_get.return_value
+    mock_response.status_code = 200
+    mock_response.json.return_value = create_mock_response_data(year=year)
+
+    response = get_yearly_sessions_data(url=URL, year=year)
+    assert response.status_code == 200
