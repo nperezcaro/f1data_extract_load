@@ -1,3 +1,4 @@
+import polars as pl
 import requests
 
 
@@ -15,3 +16,24 @@ def get_yearly_sessions_data(url: str, year: str) -> requests.Response:
     response = requests.get(url=url, params={"year": year})
 
     return response
+
+
+def get_df_from_response(response: requests.Response) -> pl.DataFrame:
+    """
+    This function takes a Response object, it returns a Polars DataFrame.
+
+    Args:
+        response (requests.Response): Response object from an API call.
+
+    Returns:
+        df (pl.DataFrame): Polars DataFrame with the content of the Response object.
+
+    Raises:
+        ValueError: if the Polars DataFrame to return is empty.
+    """
+    df = pl.DataFrame(data=response.json())
+
+    if not df.is_empty():
+        return df
+    else:
+        raise ValueError("DF created from response is empty!")
