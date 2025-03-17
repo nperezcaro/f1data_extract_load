@@ -3,6 +3,7 @@ from hypothesis import given, settings, strategies as st
 from src.extract import get_yearly_sessions_data, get_df_from_response
 
 import polars as pl
+import pytest
 
 URL = "https://api.openf1.org/v1/sessions"
 
@@ -81,3 +82,13 @@ def test_get_df_from_response():
     assert df.shape == (2, 14)
     assert df["session_key"].to_list() == [9465, 9466]
     assert df["year"].to_list() == [2024, 2024]
+
+
+def test_get_df_from_response_empty_response():
+    mock_data = []
+    mock_response = Mock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = mock_data
+
+    with pytest.raises(ValueError):
+        get_df_from_response(response=mock_response)
