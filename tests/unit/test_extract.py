@@ -1,11 +1,11 @@
 from unittest.mock import patch, Mock
 from hypothesis import given, settings, strategies as st
-from src.extract import get_yearly_sessions_data, get_df_from_response
+from src.extract import get_yearly_sessions_data, get_df_from_response, BASE_URL
 
 import polars as pl
 import pytest
 
-URL = "https://api.openf1.org/v1/sessions"
+SESSIONS_URL = BASE_URL + "sessions"
 
 
 def create_mock_response_data(year=2024):
@@ -52,7 +52,7 @@ def test_get_yearly_sessions_data(mock_get):
     mock_response.status_code = 200
     mock_response.json.return_value = create_mock_response_data()
 
-    response = get_yearly_sessions_data(url=URL, year="2024")
+    response = get_yearly_sessions_data(url=SESSIONS_URL, year="2024")
 
     assert response.status_code == 200
     assert isinstance(response.json(), list)
@@ -67,7 +67,7 @@ def test_get_yearly_sessions_data_with_parameter(mock_get, year):
     mock_response.status_code = 200
     mock_response.json.return_value = create_mock_response_data(year=year)
 
-    response = get_yearly_sessions_data(url=URL, year=year)
+    response = get_yearly_sessions_data(url=SESSIONS_URL, year=year)
     assert response.status_code == 200
 
 
