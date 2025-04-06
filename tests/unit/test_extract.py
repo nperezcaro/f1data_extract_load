@@ -9,7 +9,7 @@ from src.config import SESSIONS_URL
 from src.extract import get_df_from_response, get_yearly_sessions_data
 
 
-def create_mock_response_data(year=2024):
+def create_mock_sessions_response_data(year=2024):
     """Helper function to create mock response data."""
     return [
         {
@@ -51,7 +51,7 @@ def create_mock_response_data(year=2024):
 def test_get_yearly_sessions_data(mock_get):
     mock_response = mock_get.return_value
     mock_response.status_code = 200
-    mock_response.json.return_value = create_mock_response_data()
+    mock_response.json.return_value = create_mock_sessions_response_data()
 
     response = get_yearly_sessions_data(url=SESSIONS_URL, year="2024")
 
@@ -66,14 +66,14 @@ def test_get_yearly_sessions_data(mock_get):
 def test_get_yearly_sessions_data_with_parameter(mock_get, year):
     mock_response = mock_get.return_value
     mock_response.status_code = 200
-    mock_response.json.return_value = create_mock_response_data(year=year)
+    mock_response.json.return_value = create_mock_sessions_response_data(year=year)
 
     response = get_yearly_sessions_data(url=SESSIONS_URL, year=year)
     assert response.status_code == 200
 
 
 def test_get_df_from_response():
-    mock_data = create_mock_response_data()
+    mock_data = create_mock_sessions_response_data()
     mock_response = Mock()
     mock_response.status_code = 200
     mock_response.json.return_value = mock_data
