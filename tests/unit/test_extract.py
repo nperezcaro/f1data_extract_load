@@ -1,11 +1,12 @@
-from unittest.mock import patch, Mock
-from hypothesis import given, settings, strategies as st
-from src.extract import get_yearly_sessions_data, get_df_from_response, BASE_URL
+from unittest.mock import Mock, patch
 
 import polars as pl
 import pytest
+from hypothesis import given, settings
+from hypothesis import strategies as st
 
-SESSIONS_URL = BASE_URL + "sessions"
+from src.config import SESSIONS_URL
+from src.extract import get_df_from_response, get_yearly_sessions_data
 
 
 def create_mock_response_data(year=2024):
