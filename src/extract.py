@@ -1,7 +1,7 @@
 import polars as pl
 import requests
 
-BASE_URL = "https://api.openf1.org/v1/"
+from src.config import BASE_URL
 
 
 def get_yearly_sessions_data(url: str, year: str) -> requests.Response:
@@ -18,6 +18,30 @@ def get_yearly_sessions_data(url: str, year: str) -> requests.Response:
     response = requests.get(url=url, params={"year": year})
 
     return response
+
+
+def get_dimension_data_from_session_key(
+    dimension: str, sesion_key: int
+) -> requests.Request:
+    """
+    This function takes a dimension and a session key to use in the query, it returns a Response object.
+
+    Args:
+        dimension (str): The dimension to which data will be extracted. Needs to be a dimension that can be filtered by session key.
+        session_key (int): The session_key to use as param in the API query.
+
+    Returns:
+        requests.Response: A Response with the API's answer.
+
+    Raises:
+        ValueError: if API's answer has a status code different to 200.
+    """
+    url = BASE_URL + dimension
+    request = requests.get(url=url, params={"session_key": sesion_key})
+
+    if request.status_code != 200:
+        raise ValueError(f"Request failed with code: {request.status_code}.")
+    return request
 
 
 def get_df_from_response(response: requests.Response) -> pl.DataFrame:
